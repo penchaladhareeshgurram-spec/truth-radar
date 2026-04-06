@@ -1,13 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;800;900&display=swap');
 @import "tailwindcss";
 @import "react-quill-new/dist/quill.snow.css";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-display: "Playfair Display", ui-serif, Georgia, serif;
 }
 
 body {
-  @apply bg-transparent text-white antialiased;
+  @apply bg-black text-white antialiased;
 }
 
 .cartoon-bg {
@@ -18,7 +20,7 @@ body {
 }
 
 .glass-card {
-  @apply bg-slate-900/40 backdrop-blur-xl border border-slate-700/40 shadow-2xl rounded-2xl;
+  @apply bg-black/60 backdrop-blur-xl border border-red-900/40 shadow-[0_8px_32px_rgba(220,38,38,0.15)] rounded-2xl;
 }
 
 /* Quill Customization */

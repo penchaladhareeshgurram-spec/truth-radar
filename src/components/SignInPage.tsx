@@ -51,8 +51,8 @@ export function SignInPage() {
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-transparent">
       {/* Background decoration */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-500/5 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-[120px]"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-900/20 rounded-full blur-[120px]"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-600/10 rounded-full blur-[120px]"></div>
       </div>
 
       <motion.div
@@ -64,18 +64,18 @@ export function SignInPage() {
           <motion.div
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
-            className="inline-flex p-3 bg-red-500/20 rounded-2xl text-red-400 mb-4"
+            className="inline-flex p-3 bg-red-900/40 rounded-2xl text-red-500 mb-4 shadow-[0_0_15px_rgba(220,38,38,0.3)] border border-red-500/20"
           >
             <ShieldCheck className="w-10 h-10" />
           </motion.div>
-          <h1 className="text-4xl font-bold text-white mb-2 tracking-tight drop-shadow-lg">Veritas<span className="text-red-500">.</span></h1>
-          <p className="text-slate-100 font-medium drop-shadow-md">The Ultimate Truth Engine</p>
+          <h1 className="text-5xl font-display font-black text-white mb-2 tracking-widest drop-shadow-[0_0_15px_rgba(220,38,38,0.8)]">VERITAS<span className="text-red-600">.</span></h1>
+          <p className="text-slate-300 font-medium drop-shadow-md tracking-wider">The Ultimate Truth Engine</p>
         </div>
 
-        <div className="bg-slate-900/60 backdrop-blur-2xl border border-slate-600 rounded-3xl shadow-2xl overflow-hidden">
+        <div className="bg-black/60 backdrop-blur-2xl border border-red-900/40 rounded-3xl shadow-[0_8px_32px_rgba(220,38,38,0.15)] overflow-hidden">
           <div className="p-8">
             <div className="flex items-center gap-2 mb-8">
-              <h2 className="text-2xl font-bold text-white drop-shadow-md">
+              <h2 className="text-2xl font-display font-bold text-white drop-shadow-md tracking-wide">
                 {mode === 'signin' ? 'Welcome Back' : mode === 'signup' ? 'Join Veritas' : 'Reset Password'}
               </h2>
             </div>
@@ -166,7 +166,7 @@ export function SignInPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-red-600 hover:bg-red-500 disabled:bg-slate-800 disabled:text-slate-500 text-white rounded-xl font-semibold transition-all shadow-lg shadow-red-500/20 flex items-center justify-center gap-2"
+                className="w-full py-3 bg-red-700 hover:bg-red-600 disabled:bg-slate-800 disabled:text-slate-500 text-white rounded-xl font-bold transition-all shadow-[0_0_15px_rgba(220,38,38,0.3)] hover:shadow-[0_0_25px_rgba(220,38,38,0.5)] flex items-center justify-center gap-2 border border-red-500/50"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                   <>

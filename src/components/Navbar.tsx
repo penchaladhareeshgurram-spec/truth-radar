@@ -19,7 +19,7 @@ export function Navbar() {
               >
                 <ShieldCheck className="w-6 h-6" />
               </motion.div>
-              <span className="font-bold text-xl tracking-tight text-slate-100">Veritas<span className="text-red-500">.</span></span>
+              <span className="font-display font-black text-2xl tracking-widest text-white drop-shadow-[0_0_10px_rgba(220,38,38,0.8)] uppercase">VERITAS<span className="text-red-600">.</span></span>
             </Link>
 
             <div className="flex items-center gap-4">

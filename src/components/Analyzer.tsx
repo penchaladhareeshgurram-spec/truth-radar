@@ -297,11 +297,11 @@ export function Analyzer() {
       <div className="bg-slate-900/30 backdrop-blur-xl border border-slate-700/30 rounded-2xl shadow-2xl overflow-hidden">
         <div className="p-6 sm:p-8 border-b border-slate-700/30 bg-slate-900/20 flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-white flex items-center gap-2 mb-2">
-              <FileText className="w-6 h-6 text-red-400" />
+            <h2 className="text-3xl font-display font-bold text-white flex items-center gap-2 mb-2 tracking-wide drop-shadow-[0_0_10px_rgba(220,38,38,0.5)]">
+              <FileText className="w-6 h-6 text-red-500" />
               Multimodal Analyzer
             </h2>
-            <p className="text-slate-100 text-sm font-medium">Analyze text, images, or videos for authenticity.</p>
+            <p className="text-slate-300 text-sm font-medium tracking-wider">Analyze text, images, or videos for authenticity.</p>
           </div>
           <div className="flex gap-2">
             <button
@@ -434,7 +434,7 @@ export function Analyzer() {
             <button
               onClick={handleAnalyze}
               disabled={isAnalyzing || (!content.replace(/<[^>]*>/g, '').trim() && !media)}
-              className="flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-500 disabled:bg-slate-800 disabled:text-slate-500 text-white rounded-lg font-medium transition-all shadow-lg shadow-red-500/20"
+              className="flex items-center gap-2 px-6 py-3 bg-red-700 hover:bg-red-600 disabled:bg-slate-800 disabled:text-slate-500 text-white rounded-lg font-bold transition-all shadow-[0_0_15px_rgba(220,38,38,0.3)] hover:shadow-[0_0_25px_rgba(220,38,38,0.5)] border border-red-500/50"
             >
               {isAnalyzing ? (
                 <>
@@ -457,7 +457,7 @@ export function Analyzer() {
               className="border-t border-slate-700/50 bg-slate-950/40 p-6 sm:p-8"
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-white">Analysis Result</h3>
+                <h3 className="text-2xl font-display font-bold text-white tracking-wide drop-shadow-[0_0_10px_rgba(220,38,38,0.5)]">Analysis Result</h3>
                 <div className="flex gap-2">
                   <button
                     onClick={() => downloadResult('txt')}

@@ -81,15 +81,15 @@ export function Dashboard() {
               <ArrowLeft className="w-4 h-4" />
               Back to Analyzer
             </Link>
-            <h1 className="text-3xl font-bold text-white drop-shadow-lg">Your Dashboard</h1>
-            <p className="text-slate-100 mt-2 drop-shadow-md font-medium">View your recent content analysis history.</p>
+            <h1 className="text-4xl font-display font-black text-white drop-shadow-[0_0_15px_rgba(220,38,38,0.5)] tracking-widest uppercase">Your Dashboard</h1>
+            <p className="text-slate-300 mt-2 drop-shadow-md font-medium tracking-wider">View your recent content analysis history.</p>
           </div>
         </div>
 
-        <div className="bg-slate-900/30 backdrop-blur-xl border border-slate-700/30 rounded-2xl overflow-hidden shadow-2xl">
-          <div className="p-6 border-b border-slate-700/30 flex items-center gap-3 bg-slate-900/40">
-            <Clock className="w-5 h-5 text-slate-100" />
-            <h2 className="text-lg font-bold text-white">Recent Analyses</h2>
+        <div className="bg-black/60 backdrop-blur-xl border border-red-900/40 rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(220,38,38,0.15)]">
+          <div className="p-6 border-b border-red-900/40 flex items-center gap-3 bg-red-950/20">
+            <Clock className="w-5 h-5 text-red-500" />
+            <h2 className="text-xl font-display font-bold text-white tracking-wide">Recent Analyses</h2>
           </div>
           
           {loading ? (

@@ -14,18 +14,12 @@ import { Loader2, ShieldCheck } from 'lucide-react';
 
 function Background() {
   return (
-    <div className="fixed inset-0 z-[-1] overflow-hidden bg-slate-950">
-      {/* 
-        To use your specific Batman image:
-        1. Upload the image to the 'public' folder in the file explorer on the left.
-        2. Rename it to 'batman-bg.jpg'
-        3. The image will automatically appear here.
-      */}
+    <div className="fixed inset-0 z-[-1] overflow-hidden bg-black">
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
-        style={{ backgroundImage: "url('/batman-bg.jpg'), url('https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?q=80&w=3270&auto=format&fit=crop')" }}
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-60 mix-blend-luminosity"
+        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1503788311183-fa3bf9c4bc32?q=80&w=3270&auto=format&fit=crop')" }}
       ></div>
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/50 to-slate-950/90 backdrop-blur-[2px]"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-red-950/40 to-black/90 backdrop-blur-[1px]"></div>
     </div>
   );
 }
