@@ -25,7 +25,7 @@ interface MediaFile {
 
 export function Analyzer() {
   const [content, setContent] = useState('');
-  const [media, setMedia] = useState<MediaFile | null>(null);
+  const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -36,40 +36,56 @@ export function Analyzer() {
   const { user } = useAuth();
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
-    if (file.size > 20 * 1024 * 1024) {
-      setError("File size exceeds 20MB limit.");
-      return;
-    }
+    const newMediaFiles: MediaFile[] = [];
+    let hasError = false;
 
-    const isImage = file.type.startsWith('image/');
-    const isVideo = file.type.startsWith('video/');
+    for (const file of files) {
+      if (file.size > 20 * 1024 * 1024) {
+        setError("One or more files exceed the 20MB limit.");
+        hasError = true;
+        continue;
+      }
 
-    if (!isImage && !isVideo) {
-      setError("Please upload an image or video file.");
-      return;
-    }
+      const isImage = file.type.startsWith('image/');
+      const isVideo = file.type.startsWith('video/');
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64 = (reader.result as string).split(',')[1];
-      setMedia({
+      if (!isImage && !isVideo) {
+        setError("Please upload only image or video files.");
+        hasError = true;
+        continue;
+      }
+
+      const base64 = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          resolve((reader.result as string).split(',')[1]);
+        };
+        reader.readAsDataURL(file);
+      });
+
+      newMediaFiles.push({
         file,
         preview: URL.createObjectURL(file),
         type: isImage ? 'image' : 'video',
         base64
       });
-      setError(null);
-    };
-    reader.readAsDataURL(file);
+    }
+
+    if (!hasError) setError(null);
+    setMediaFiles(prev => [...prev, ...newMediaFiles]);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const removeMedia = () => {
-    if (media?.preview) URL.revokeObjectURL(media.preview);
-    setMedia(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+  const removeMedia = (index: number) => {
+    setMediaFiles(prev => {
+      const newFiles = [...prev];
+      URL.revokeObjectURL(newFiles[index].preview);
+      newFiles.splice(index, 1);
+      return newFiles;
+    });
   };
 
   const handleGenerateImage = async () => {
@@ -141,12 +157,12 @@ export function Analyzer() {
     const byteArray = new Uint8Array(byteNumbers);
     const file = new File([byteArray], 'generated-image.png', { type: 'image/png' });
 
-    setMedia({
+    setMediaFiles(prev => [...prev, {
       file,
       preview: generatedImage.preview,
       type: 'image',
       base64: generatedImage.base64
-    });
+    }]);
     setGeneratedImage(null);
     setGenPrompt('');
     setError(null);
@@ -154,7 +170,7 @@ export function Analyzer() {
 
   const handleAnalyze = async () => {
     const plainText = content.replace(/<[^>]*>/g, '').trim();
-    if (!plainText && !media) {
+    if (!plainText && mediaFiles.length === 0) {
       setError("Please enter some text or upload a file to analyze.");
       return;
     }
@@ -170,14 +186,16 @@ export function Analyzer() {
         parts.push({ text: `Context/Text to analyze (formatted as HTML): "${content}"` });
       }
 
-      if (media) {
-        parts.push({
-          inlineData: {
-            data: media.base64,
-            mimeType: media.file.type
-          }
+      if (mediaFiles.length > 0) {
+        mediaFiles.forEach(media => {
+          parts.push({
+            inlineData: {
+              data: media.base64,
+              mimeType: media.file.type
+            }
+          });
         });
-        parts.push({ text: `Analyze this ${media.type} for signs of manipulation, deepfakes, or misleading content.` });
+        parts.push({ text: `Analyze the provided media for signs of manipulation, deepfakes, or misleading content.` });
       }
 
       const response = await ai.models.generateContent({
@@ -211,7 +229,7 @@ export function Analyzer() {
         try {
           await addDoc(collection(db, 'analyses'), {
             userId: user.uid,
-            content: content.substring(0, 10000) || `Analyzed ${media?.type || 'media'}`,
+            content: content.substring(0, 10000) || `Analyzed ${mediaFiles.length} media file(s)`,
             trustScore: parsedResult.trustScore,
             verdict: parsedResult.verdict,
             analysisDetails: parsedResult.analysisDetails,
@@ -316,6 +334,7 @@ export function Analyzer() {
               ref={fileInputRef}
               onChange={handleFileChange}
               accept="image/*,video/*"
+              multiple
               className="hidden"
             />
           </div>
@@ -392,28 +411,40 @@ export function Analyzer() {
             </div>
 
             <AnimatePresence>
-              {media && (
+              {mediaFiles.length > 0 && (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="relative group rounded-xl overflow-hidden border border-slate-700 bg-slate-950/50 aspect-video max-h-64 mx-auto"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4"
                 >
-                  {media.type === 'image' ? (
-                    <img src={media.preview} alt="Preview" className="w-full h-full object-contain" />
-                  ) : (
-                    <video src={media.preview} className="w-full h-full object-contain" controls />
-                  )}
-                  <button
-                    onClick={removeMedia}
-                    className="absolute top-2 right-2 p-1.5 bg-slate-900/80 text-slate-400 hover:text-red-400 rounded-full backdrop-blur-sm transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                  <div className="absolute bottom-2 left-2 px-2 py-1 bg-slate-900/80 text-xs text-slate-300 rounded backdrop-blur-sm flex items-center gap-1.5">
-                    {media.type === 'image' ? <ImageIcon className="w-3 h-3" /> : <Video className="w-3 h-3" />}
-                    {media.file.name}
-                  </div>
+                  {mediaFiles.map((media, index) => (
+                    <motion.div
+                      key={media.preview}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      className="relative group rounded-xl overflow-hidden border border-slate-700 bg-slate-950/50 aspect-square"
+                    >
+                      {media.type === 'image' ? (
+                        <img src={media.preview} alt="Preview" className="w-full h-full object-cover" />
+                      ) : (
+                        <video src={media.preview} className="w-full h-full object-cover" />
+                      )}
+                      <button
+                        onClick={() => removeMedia(index)}
+                        className="absolute top-2 right-2 p-1.5 bg-slate-900/80 text-slate-400 hover:text-red-400 rounded-full backdrop-blur-sm transition-colors opacity-0 group-hover:opacity-100"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                      <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
+                        <div className="flex items-center gap-1.5 text-xs text-slate-300 truncate">
+                          {media.type === 'image' ? <ImageIcon className="w-3 h-3 shrink-0" /> : <Video className="w-3 h-3 shrink-0" />}
+                          <span className="truncate">{media.file.name}</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -433,7 +464,7 @@ export function Analyzer() {
           <div className="mt-6 flex items-center justify-end">
             <button
               onClick={handleAnalyze}
-              disabled={isAnalyzing || (!content.replace(/<[^>]*>/g, '').trim() && !media)}
+              disabled={isAnalyzing || (!content.replace(/<[^>]*>/g, '').trim() && mediaFiles.length === 0)}
               className="flex items-center gap-2 px-6 py-3 bg-red-700 hover:bg-red-600 disabled:bg-slate-800 disabled:text-slate-500 text-white rounded-lg font-bold transition-all shadow-[0_0_15px_rgba(220,38,38,0.3)] hover:shadow-[0_0_25px_rgba(220,38,38,0.5)] border border-red-500/50"
             >
               {isAnalyzing ? (
